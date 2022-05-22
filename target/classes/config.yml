@@ -1,9 +1,0 @@
-mySQL:
-  enable: false
-  host: localhost
-  port: 3306
-  dbname: database
-  user: user
-  password: password
-fruit:
-  drop_chance: 100
