@@ -20,14 +20,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class ActionListener implements Listener {
 
-    HashMap<UUID, Long> playerInWater = new HashMap<>();
+    ArrayList<UUID> playerInWater = new ArrayList<>();
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
@@ -199,16 +196,14 @@ public class ActionListener implements Listener {
 
         if (block.getType() == Material.WATER) {
 
-            if (playerInWater.containsKey(player.getUniqueId())) if (System.currentTimeMillis() > playerInWater.get(player.getUniqueId())) {
-                if (player.getLocation().add(0, -0.5, 0).getBlock().getType() == Material.WATER) {
-                    player.teleport(player.getLocation().add(0, -0.3, 0));
-                }
-            }
-            if (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
-                event.setCancelled(true);
-                if (!playerInWater.containsKey(player.getUniqueId())) {
-                    playerInWater.put(player.getUniqueId(), System.currentTimeMillis() + 3000);
-                }
+            if (!playerInWater.contains(player.getUniqueId())) {
+                playerInWater.add(player.getUniqueId());
+                FruitsMain.getInstance().getServer().getScheduler().runTaskLater(FruitsMain.getInstance(), () -> {
+                    if (player.getLocation().getBlock().getType() == Material.WATER) {
+                        player.damage(2);
+                    }
+                    playerInWater.remove(player.getUniqueId());
+                }, 15L);
             }
 
         }
