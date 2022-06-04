@@ -26,8 +26,6 @@ public class AddPlayerXpCommand extends AbstractCommand {
             FruitPlayer player = PlayerManager.getInstance().getPlayer(UUID.fromString(args[1]));
             player.addXP(Integer.parseInt(args[0]));
         }
-
-
         return true;
     }
 

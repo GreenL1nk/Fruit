@@ -17,21 +17,21 @@ import java.util.UUID;
 
 public enum FruitEnum {
 
-    SUKE("Suke Suke", false, null, new Suke()),
-    TON("Ton Ton", false, null, new Ton()),
-    KUKU("Kuku Kuku", false, null, new Kuku()),
     CHIYU("Chiyu Chiyu", false, null, new Chiyu()),
-    FUWA("Fuwa Fuwa", false, null, new Fuwa()),
     DOKU("Doku Doku", false, null, new Doku()),
-    NETSU("Netsu Netsu", false, null, new Netsu()),
-    KOBU("Kobu Kobu", false, null, new Kobu()),
+    FUWA("Fuwa Fuwa", false, null, new Fuwa()),
     GOMU("Gomu Gomu", false, null, new Gomu()),
-    NORO("Noro Noro", false, null, new Noro()),
-    TOGE("Toge Toge", false, null, new Toge()),
-    MERA("Mera Mera", false, null, new Mera()),
     GORO("Goro Goro", false, null, new Goro()),
+    KOBU("Kobu Kobu", false, null, new Kobu()),
+    KUKU("Kuku Kuku", false, null, new Kuku()),
     MAGU("Magu Magu", false, null, new Magu()),
-    PIKA("Pika Pika", false, null, new Pika());
+    MERA("Mera Mera", false, null, new Mera()),
+    NETSU("Netsu Netsu", false, null, new Netsu()),
+    NORO("Noro Noro", false, null, new Noro()),
+    PIKA("Pika Pika", false, null, new Pika()),
+    SUKE("Suke Suke", false, null, new Suke()),
+    TOGE("Toge Toge", false, null, new Toge()),
+    TON("Ton Ton", false, null, new Ton());
 
     private final String name;
     private ItemStack itemStack;
@@ -48,8 +48,7 @@ public enum FruitEnum {
         this.isActive = isActive;
         this.holder = holder;
         this.fruitPowers = fruitPowers;
-    };
-
+    }
 
     public ItemStack getFruitStack() {
         return itemStack;
@@ -101,7 +100,6 @@ public enum FruitEnum {
 
         return fruitHolders;
     }
-
 
     public boolean isActive() {
         return isActive;

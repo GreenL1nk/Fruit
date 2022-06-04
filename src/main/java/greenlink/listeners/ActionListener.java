@@ -1,12 +1,15 @@
 package greenlink.listeners;
 
+import com.destroystokyo.paper.MaterialTags;
 import greenlink.FruitPlayer;
 import greenlink.FruitsMain;
 import greenlink.PlayerManager;
+import greenlink.enchantments.EnchantEnum;
 import greenlink.fruits.FruitEnum;
 import greenlink.fruits.powers.Pika;
 import io.lumine.mythic.bukkit.BukkitAPIHelper;
 import io.lumine.mythic.core.mobs.ActiveMob;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -152,27 +156,35 @@ public class ActionListener implements Listener {
         if(event.getEntity() instanceof Player){
 
             Player player = (Player) event.getEntity();
-
             FruitPlayer fruitPlayer = PlayerManager.getInstance().getPlayer(player.getUniqueId());
 
             if(fruitPlayer.getActiveFruit() == null) return;
-
             fruitPlayer.getActiveFruit().getFruitPowers().passiveOnEntityDamage(player, event);
-
         }
     }
 
     @EventHandler
     public void onDamageTaken(EntityDamageByEntityEvent event) {
 
+        Entity damager = event.getDamager();
 
         BukkitAPIHelper mythicMobsAPI = new BukkitAPIHelper();
-        if (mythicMobsAPI.isMythicMob(event.getEntity()) && event.getDamager() instanceof Player) {
+        if (mythicMobsAPI.isMythicMob(event.getEntity()) && damager instanceof Player) {
             ActiveMob mythicMobInstance = mythicMobsAPI.getMythicMobInstance(event.getEntity());
-            FruitPlayer player = PlayerManager.getInstance().getPlayer(event.getDamager().getUniqueId());
+            FruitPlayer player = PlayerManager.getInstance().getPlayer(damager.getUniqueId());
             if (player.getLevel() < mythicMobInstance.getLevel()) {
-                event.getDamager().sendMessage(ChatColor.RED + "You cannot attack a mob of a level higher than you");
+                damager.sendMessage(ChatColor.RED + "You cannot attack a mob of a level higher than you");
                 event.setCancelled(true);
+            }
+        }
+
+        if (damager instanceof Player) {
+            ItemStack itemInMainHand = ((Player) damager).getInventory().getItemInMainHand();
+            for (EnchantEnum value : EnchantEnum.values()) {
+                if (!itemInMainHand.hasItemMeta()) break;
+                if (itemInMainHand.getItemMeta().hasEnchant(value.getEnchant())) {
+                    value.getEnchant().onHit(event.getEntity(), (Player) damager, event);
+                }
             }
         }
 
@@ -184,7 +196,7 @@ public class ActionListener implements Listener {
         FruitPlayer fruitPlayerWhoDamaged = PlayerManager.getInstance().getPlayer(playerWhoDamaged.getUniqueId());
         if(fruitPlayerWhoDamaged.getActiveFruit() == null) return;
 
-        fruitPlayerWhoDamaged.getActiveFruit().getFruitPowers().passiveOnDamageTaken(playerWhoDamaged, event.getDamager(), event);
+        fruitPlayerWhoDamaged.getActiveFruit().getFruitPowers().passiveOnDamageTaken(playerWhoDamaged, damager, event);
     }
 
     @EventHandler
@@ -220,6 +232,39 @@ public class ActionListener implements Listener {
             }
             if (hitEntity != null && event.getEntity().getPersistentDataContainer().has(Pika.namespacedKeyLeft)) {
                 hitEntity.getWorld().createExplosion(hitEntity.getLocation().getX(), hitEntity.getLocation().getY(), hitEntity.getLocation().getZ(), 2, false, false);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onAnvil(PrepareAnvilEvent event) {
+        ItemStack firstItem = event.getInventory().getFirstItem();
+        ItemStack secondItem = event.getInventory().getSecondItem();
+        if (firstItem != null && secondItem != null) {
+            for (EnchantEnum value : EnchantEnum.values()) {
+                if (secondItem.getItemMeta().hasEnchant(value.getEnchant()) && MaterialTags.SWORDS.isTagged(firstItem)) {
+                    if (EnchantEnum.countEnchantsOnItem(firstItem) >= 3) return;
+                    ItemStack itemStack = firstItem.clone();
+                    int enchantmentLevel = secondItem.getEnchantmentLevel(value.getEnchant());
+                    itemStack.addUnsafeEnchantment(value.getEnchant(), enchantmentLevel);
+                    List<Component> lore = new ArrayList<>();
+                    if (itemStack.getItemMeta().hasLore()) {
+                        lore.addAll(Objects.requireNonNull(itemStack.lore()));
+                    }
+                    lore.add(value.getEnchant().displayName(enchantmentLevel));
+                    itemStack.lore(lore);
+                    event.getInventory().setRepairCost(5);
+                    event.setResult(itemStack);
+                }
+                else if (firstItem.equals(secondItem) && firstItem.getItemMeta().hasEnchant(value.getEnchant())) {
+                    ItemStack itemStack = firstItem.clone();
+                    int enchantmentLevel = firstItem.getEnchantmentLevel(value.getEnchant()) + 1;
+                    if (enchantmentLevel > value.getEnchant().getMaxLevel()) return;
+                    itemStack.lore(Collections.singletonList(value.getEnchant().displayName(enchantmentLevel)));
+                    itemStack.addUnsafeEnchantment(value.getEnchant(), enchantmentLevel);
+                    event.getInventory().setRepairCost(5);
+                    event.setResult(itemStack);
+                }
             }
         }
     }

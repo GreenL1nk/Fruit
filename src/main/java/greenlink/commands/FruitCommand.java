@@ -1,18 +1,22 @@
 package greenlink.commands;
 
 import greenlink.FruitsMain;
+import greenlink.enchantments.EnchantEnum;
 import greenlink.files.DataManager;
 import greenlink.files.FruitManager;
 import greenlink.fruits.FruitEnum;
 import greenlink.utils.AbstractCommand;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FruitCommand extends AbstractCommand {
@@ -26,9 +30,13 @@ public class FruitCommand extends AbstractCommand {
         }
 
         if (args.length == 0) {
-//            Player player = (Player) sender;
-//            PlayerManager.getInstance().getPlayer(player.getUniqueId()).addXP(10);
-//            Bukkit.broadcastMessage(String.valueOf(PlayerManager.getInstance().getPlayer(player.getUniqueId()).getXp()));
+            Player player = (Player) sender;
+            for (EnchantEnum value : EnchantEnum.values()) {
+                ItemStack itemStack = new ItemStack(Material.ENCHANTED_BOOK);
+                itemStack.addUnsafeEnchantment(value.getEnchant(), 1);
+                itemStack.lore(Collections.singletonList(value.getEnchant().displayName(1)));
+                player.getInventory().addItem(itemStack);
+            }
             return true;
         }
 
@@ -43,13 +51,10 @@ public class FruitCommand extends AbstractCommand {
         }
 
         if (args[0].equalsIgnoreCase("get")) {
-
             if (sender instanceof Player) {
-
                 for (FruitEnum fruit : FruitEnum.values()) {
                     ((Player) sender).getInventory().addItem(fruit.getFruitStack());
                 }
-
             }
 
             return true;

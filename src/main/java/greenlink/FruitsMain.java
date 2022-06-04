@@ -2,6 +2,7 @@ package greenlink;
 
 import greenlink.commands.*;
 import greenlink.db.DatabaseConnector;
+import greenlink.enchantments.EnchantEnum;
 import greenlink.files.DataManager;
 import greenlink.files.FruitManager;
 import greenlink.fruits.FruitEnum;
@@ -50,6 +51,10 @@ public final class FruitsMain extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new FlightToggleListener(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
+
+        for (EnchantEnum value : EnchantEnum.values()) {
+            EnchantEnum.registerEnchantment(value.getEnchant());
+        }
 
         FruitEnum.init();
         DatabaseConnector.getInstance().getFruitHolders();
