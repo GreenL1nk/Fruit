@@ -7,7 +7,7 @@ import java.util.UUID;
 public class FruitPlayer {
 
     private final UUID uuid;
-    private FruitEnum ActiveFruit;
+    private FruitEnum activeFruit;
     private int level;
     private int xp;
     private Long leaveTime;
@@ -16,15 +16,15 @@ public class FruitPlayer {
         this.uuid = uuid;
         this.xp = 0;
         this.level = 0;
-        this.ActiveFruit = null;
+        this.activeFruit = null;
         this.leaveTime = null;
     }
 
-    public FruitPlayer(UUID uuid, int level, int xp, FruitEnum ActiveFruit, Long leaveTime) {
+    public FruitPlayer(UUID uuid, int level, int xp, FruitEnum activeFruit, Long leaveTime) {
         this.uuid = uuid;
         this.level = level;
         this.xp = xp;
-        this.ActiveFruit = ActiveFruit;
+        this.activeFruit = activeFruit;
         this.leaveTime = leaveTime;
     }
 
@@ -33,17 +33,17 @@ public class FruitPlayer {
     }
 
     public FruitEnum getActiveFruit() {
-        return ActiveFruit;
+        return activeFruit;
     }
 
     public void setActiveFruit(FruitEnum activeFruit) {
-        this.ActiveFruit = activeFruit;
-        this.ActiveFruit.setHolder(this);
+        this.activeFruit = activeFruit;
+        this.activeFruit.setHolder(this);
     }
 
     public void removeActiveFruit() {
-        this.ActiveFruit.setHolder(null);
-        this.ActiveFruit = null;
+        this.activeFruit.setHolder(null);
+        this.activeFruit = null;
     }
 
     public int getLevel() {
