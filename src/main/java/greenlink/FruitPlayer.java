@@ -1,6 +1,8 @@
 package greenlink;
 
 import greenlink.fruits.FruitEnum;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -37,12 +39,12 @@ public class FruitPlayer {
     }
 
     public void setActiveFruit(FruitEnum activeFruit) {
+        if (this.getActiveFruit() != null) this.getActiveFruit().getFruitPowers().resetCoolDowns(this.getPlayer());
         this.activeFruit = activeFruit;
-        this.activeFruit.setHolder(this);
     }
 
     public void removeActiveFruit() {
-        this.activeFruit.setHolder(null);
+        this.getActiveFruit().getFruitPowers().resetCoolDowns(this.getPlayer());
         this.activeFruit = null;
     }
 
@@ -90,5 +92,9 @@ public class FruitPlayer {
 
     public void addLevel(int count) {
         level += count;
+    }
+
+    public Player getPlayer() {
+        return Bukkit.getPlayer(this.uuid);
     }
 }

@@ -3,7 +3,6 @@ package greenlink.db;
 
 import greenlink.FruitPlayer;
 import greenlink.FruitsMain;
-import greenlink.PlayerManager;
 import greenlink.fruits.FruitEnum;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -144,38 +143,6 @@ public class DatabaseConnector {
         }
     }
 
-    public void getFruitHolders() {
-        try {
-            Statement statement = connection.createStatement();
-
-            for (FruitEnum fruit : FruitEnum.values()) {
-
-                String sqlRequest = String.format("SELECT holder_uuid FROM fruit_holders WHERE fruit='%s'", fruit);
-                ResultSet result = statement.executeQuery(sqlRequest);
-                if (!result.next()) {
-                    String sql = String.format("INSERT INTO holder_uuid (fruit, holder_uuid) VALUES ('%s', '%s')",
-                            fruit, null);
-                    statement.executeUpdate(sql);
-                }
-                else {
-                    try {
-                        UUID uuid = UUID.fromString(result.getString("holder_uuid"));
-                        fruit.setHolder(PlayerManager.getInstance().getPlayer(uuid));
-                    }
-                    catch (Exception ignored) {
-                    }
-                }
-            }
-
-//            String sqlRequest = "SELECT * FROM players_to_remove";
-//            ResultSet result = statement.executeQuery(sqlRequest);
-//            FruitsMain.getInstance().getServer().getLogger().log(Level.INFO, result.toString());
-
-        } catch (Exception e) {
-            FruitsMain.getInstance().getServer().getLogger().log(Level.WARNING, "[Fruits]При загрузке держателей фруктов произошла ошибка.");
-        }
-    }
-
     public void saveFruitPlayer(FruitPlayer fruitPlayer, long leaveTime) {
         try {
             Statement statement = connection.createStatement();
@@ -195,55 +162,6 @@ public class DatabaseConnector {
 
             statement.close();
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void saveFruitHolders() {
-        try {
-            Statement statement = connection.createStatement();
-            for (FruitEnum fruit : FruitEnum.values()) {
-                if (fruit.getHolder() != null) {
-                    if (sql.equals("sqlite")) {
-                        statement.executeUpdate(String.format("INSERT INTO fruit_holders (fruit, holder_uuid) VALUES ('%s', '%s') " +
-                                        "ON CONFLICT(fruit) DO UPDATE SET holder_uuid='%s'",
-                                fruit, fruit.getHolder().getUuid(), fruit.getHolder().getUuid()));
-                    } else {
-                        statement.executeUpdate(String.format("INSERT INTO fruit_holders (fruit, holder_uuid) VALUES ('%s', '%s') " +
-                                        "ON DUPLICATE KEY UPDATE fruit='%s', holder_uuid='%s'",
-                                fruit, fruit.getHolder().getUuid(),
-                                fruit, fruit.getHolder().getUuid()));
-                    }
-                }
-                else {
-                    if (sql.equals("sqlite")) {
-                        statement.executeUpdate(String.format("INSERT INTO fruit_holders (fruit, holder_uuid) VALUES ('%s', '%s') " +
-                                        "ON CONFLICT(fruit) DO UPDATE SET holder_uuid='%s'",
-                                fruit, null, null));
-                    } else {
-                        statement.executeUpdate(String.format("INSERT INTO fruit_holders (fruit, holder_uuid) VALUES ('%s', '%s') " +
-                                        "ON DUPLICATE KEY UPDATE fruit='%s', holder_uuid='%s'",
-                                fruit, null,
-                                fruit, null));
-                    }
-                }
-            }
-
-//            for (FruitPlayer fruitPlayer : FruitsMain.getInstance().playersToRemoveFruits) {
-//                if (sql.equals("sqlite")) {
-//                    statement.executeUpdate(String.format("INSERT INTO players_to_remove (uuid) VALUES ('%s') " +
-//                                    "ON CONFLICT(uuid) DO IGNORE",
-//                            fruitPlayer.getUuid()));
-//                }
-//                else {
-//                    statement.executeUpdate(String.format("INSERT INTO players_to_remove (uuid) VALUES ('%s') " +
-//                                    "ON DUPLICATE KEY UPDATE uuid='%s'",
-//                            fruitPlayer.getUuid(),
-//                            fruitPlayer.getUuid()));
-//                }
-//            }
-        }
-        catch (Exception e) {
             e.printStackTrace();
         }
     }

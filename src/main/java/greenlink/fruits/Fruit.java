@@ -35,8 +35,12 @@ public abstract class Fruit {
 
     public void resetCoolDowns(Player player) {
         UUID uuid = player.getUniqueId();
-        leftCoolDown.remove(uuid);
-        rightCoolDown.remove(uuid);
-        spaceCoolDown.remove(uuid);
+        try {
+            leftCoolDown.remove(uuid);
+            rightCoolDown.remove(uuid);
+            spaceCoolDown.remove(uuid);
+        }
+        catch (Exception ignored) {
+        }
     }
 }

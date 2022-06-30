@@ -48,7 +48,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                    <outputDirectory>C:/Users/fev01/Desktop/server/plugins</outputDirectory>
+                    <outputDirectory>C:/Users/fev01/Desktop/1.19/plugins</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.18.2-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

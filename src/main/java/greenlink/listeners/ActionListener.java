@@ -7,6 +7,7 @@ import greenlink.PlayerManager;
 import greenlink.enchantments.EnchantEnum;
 import greenlink.fruits.FruitEnum;
 import greenlink.fruits.powers.Pika;
+import greenlink.items.ItemEnum;
 import io.lumine.mythic.bukkit.BukkitAPIHelper;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import net.kyori.adventure.text.Component;
@@ -27,7 +28,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class ActionListener implements Listener {
-
     ArrayList<UUID> playerInWater = new ArrayList<>();
 
     @EventHandler
@@ -44,23 +44,20 @@ public class ActionListener implements Listener {
                 double randomNum = r.nextFloat() * (maxX - minX) + minX;
 
                 if (randomNum <= (FruitsMain.getInstance().getConfig().getDouble("fruit.drop_chance"))) {
-                    FruitEnum fruit = FruitEnum.getRandomNotActiveFruit();
-                    if (fruit != null) event.getDrops().add(fruit.getFruitStack());
-                }
-            }
-        }
-    }
+                    int total = 0;
+                    for (Map.Entry<FruitEnum, Integer> chance : FruitsMain.fruitDropChances.entrySet()) {
+                        total += chance.getValue();
+                    }
+                    int dropChance = r.nextInt(0, total);
 
-    @EventHandler
-    public void onPlayerPickUpItem(EntityPickupItemEvent event) {
-
-        if (event.getEntity() instanceof Player) {
-            if (event.getItem().getItemStack().getType() != Material.CHORUS_FRUIT) return;
-
-            for (FruitEnum fruit : FruitEnum.values()) {
-                if (fruit.getFruitStack().equals(event.getItem().getItemStack())) {
-                    fruit.setHolder(PlayerManager.getInstance().getPlayer(event.getEntity().getUniqueId()));
-                    fruit.setActive(true);
+                    int totalDummy = 0;
+                    for (Map.Entry<FruitEnum, Integer> chance : FruitsMain.fruitDropChances.entrySet()) {
+                        if (dropChance < chance.getValue() + totalDummy && dropChance >= totalDummy) {
+                            event.getDrops().add(chance.getKey().getFruitStack());
+                            return;
+                        }
+                        else totalDummy += chance.getValue();
+                    }
                 }
             }
         }
@@ -76,6 +73,13 @@ public class ActionListener implements Listener {
             FruitPlayer fruitPlayer = PlayerManager.getInstance().getPlayer(player.getUniqueId());
             ItemStack mainHandItem = player.getInventory().getItemInMainHand();
             ItemStack offHandItem = player.getInventory().getItemInOffHand();
+
+            ItemEnum itemEnum = Arrays.stream(ItemEnum.values()).filter(item -> item.getItem().equals(event.getItem())).findFirst().orElse(null);
+
+            if(itemEnum != null) {
+                itemEnum.getItem().onUse(event);
+                event.setCancelled(true);
+            }
 
             if (fruitPlayer.getActiveFruit() != null && mainHandItem.getType().isAir() && offHandItem.getType().isAir()) {
 
@@ -117,38 +121,19 @@ public class ActionListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-
         Player player = event.getEntity().getPlayer();
-
         if (player == null) return;
 
         FruitPlayer fruitPlayer = PlayerManager.getInstance().getPlayer(player.getUniqueId());
 
-        if (fruitPlayer.getActiveFruit() == null && !FruitEnum.playerHaveFruits(fruitPlayer)) return;
+        if (fruitPlayer.getActiveFruit() == null && !FruitEnum.fruitInInventory(player)) return;
 
         if(fruitPlayer.getActiveFruit() != null) {
             fruitPlayer.getActiveFruit().getFruitPowers().onDeath(player);
             playerInWater.remove(player.getUniqueId());
 
-            //TODO: Подумать/Проверить, нужно ли вообще setActive()
-            fruitPlayer.getActiveFruit().setActive(false);
-
             fruitPlayer.getActiveFruit().getFruitPowers().resetCoolDowns(player);
-            fruitPlayer.removeActiveFruit();
         }
-
-        for (FruitEnum fruit : FruitEnum.values()) {
-            if (fruit.getHolder() != null) {
-                if (fruit.getHolder().equals(fruitPlayer)) {
-                    if (player.getInventory().contains(fruit.getFruitStack())) {
-                        player.getInventory().remove(fruit.getFruitStack());
-                        player.getWorld().dropItemNaturally(player.getLocation(), fruit.getFruitStack());
-                    }
-                    fruit.setHolder(null);
-                }
-            }
-        }
-        player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Your fruits and powers are lost");
     }
 
     @EventHandler
@@ -272,6 +257,7 @@ public class ActionListener implements Listener {
     @EventHandler
     public void test(PlayerCommandPreprocessEvent event) {
         if (event.getMessage().equals("/test") && event.getPlayer().isOp()) {
+
         }
     }
 }

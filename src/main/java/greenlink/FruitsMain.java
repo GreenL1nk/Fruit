@@ -4,9 +4,9 @@ import greenlink.commands.*;
 import greenlink.db.DatabaseConnector;
 import greenlink.enchantments.EnchantEnum;
 import greenlink.files.DataManager;
-import greenlink.files.FruitManager;
 import greenlink.fruits.FruitEnum;
 import greenlink.guis.TradeMenu;
+import greenlink.items.ItemEnum;
 import greenlink.listeners.*;
 import greenlink.utils.AbstractInventoryHolder;
 import org.bukkit.Bukkit;
@@ -17,8 +17,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static greenlink.fruits.FruitEnum.getRandomNotActiveFruit;
 
@@ -26,10 +26,8 @@ public final class FruitsMain extends JavaPlugin {
 
     private static FruitsMain instance;
     public DataManager data;
-    public FruitManager fruitManager;
-
-    public ArrayList<FruitPlayer> playersToRemoveFruits = new ArrayList<>();
     public HashMap<Player, ArrayList<Player>> playerTradeRequests = new HashMap<>();
+    public static HashMap<FruitEnum, Integer> fruitDropChances = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -38,7 +36,6 @@ public final class FruitsMain extends JavaPlugin {
 
         this.saveDefaultConfig();
         this.data = new DataManager();
-        this.fruitManager = new FruitManager();
 
         new FruitCommand().register(this, "fruit");
         new SetFruitSpawnCommand().register(this, "setfruitspawn");
@@ -57,25 +54,21 @@ public final class FruitsMain extends JavaPlugin {
         }
 
         FruitEnum.init();
-        DatabaseConnector.getInstance().getFruitHolders();
+        ItemEnum.init();
 
-        this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            long runTime = System.currentTimeMillis();
-
-            for (FruitEnum fruit : FruitEnum.values()) {
-                if (fruit.getHolder() != null) {
-                    if (fruit.getHolder().getLeaveTime() != null) {
-                        long days = TimeUnit.MILLISECONDS.toDays(runTime - fruit.getHolder().getLeaveTime());
-                        if (days >= 7) {
-                            playersToRemoveFruits.add(fruit.getHolder());
-                            if (fruit.getHolder().getActiveFruit() != null) fruit.getHolder().removeActiveFruit();
-                            fruit.setHolder(null);
-                            fruit.setActive(false);
-                        }
-                    }
+        for (FruitEnum value : FruitEnum.values()) {
+            if (!data.getConfig().getConfigurationSection("fruits_chances").contains(value.name())) {
+                data.getConfig().set("fruits_chances." + value, 10);
+            }
+        }
+        data.saveConfig();
+        for (Map.Entry<String, Object> fruits_chances : data.getConfig().getConfigurationSection("fruits_chances").getValues(false).entrySet()) {
+            for (FruitEnum value : FruitEnum.values()) {
+                if (fruits_chances.getKey().equals(value.name())) {
+                    fruitDropChances.put(value, Integer.parseInt(String.valueOf(fruits_chances.getValue())));
                 }
             }
-        }, 0L, 10 * 1200L); // 10min
+        }
 
         if (data.getConfig().contains("fruitsRespawn")) {
             Set<String> keys = data.getConfig().getConfigurationSection("fruitsRespawn").getKeys(false);
@@ -89,10 +82,10 @@ public final class FruitsMain extends JavaPlugin {
                     public void run() {
                         try {
                             FruitEnum fruit = getRandomNotActiveFruit();
-                            if (!fruit.isActive()) {
-                                Item item = location.getWorld().dropItemNaturally(location, fruit.getFruitStack());
-                                item.setTicksLived(4800);
-                            }
+
+                            Item item = location.getWorld().dropItemNaturally(location, fruit.getFruitStack());
+                            item.setTicksLived(4800);
+
                         }
                         catch (Exception e) {
 
@@ -116,7 +109,6 @@ public final class FruitsMain extends JavaPlugin {
                 if (holder.getResponser() == onlinePlayer) TradeMenu.responserSlots.stream().filter(integer -> holder.getInventory().getItem(integer) != null).forEach(integer -> holder.getResponser().getInventory().addItem(holder.getInventory().getItem(integer)));
             }
         }
-        DatabaseConnector.getInstance().saveFruitHolders();
         DatabaseConnector.getInstance().closeConnection();
     }
 

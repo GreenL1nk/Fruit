@@ -3,8 +3,8 @@ package greenlink.commands;
 import greenlink.FruitsMain;
 import greenlink.enchantments.EnchantEnum;
 import greenlink.files.DataManager;
-import greenlink.files.FruitManager;
 import greenlink.fruits.FruitEnum;
+import greenlink.items.ItemEnum;
 import greenlink.utils.AbstractCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -37,16 +37,19 @@ public class FruitCommand extends AbstractCommand {
                 itemStack.lore(Collections.singletonList(value.getEnchant().displayName(1)));
                 player.getInventory().addItem(itemStack);
             }
+            for (FruitEnum value : FruitEnum.values()) {
+                player.getInventory().addItem(value.getFruitStack());
+            }
+            for (ItemEnum value : ItemEnum.values()) {
+                player.getInventory().addItem(value.getItem());
+            }
             return true;
         }
 
 
         if (args[0].equalsIgnoreCase("reload")) {
             DataManager dataManager = FruitsMain.getInstance().data;
-            FruitManager fruitManager = FruitsMain.getInstance().fruitManager;
             dataManager.reloadConfig();
-            fruitManager.reloadConfig();
-
             return true;
         }
 

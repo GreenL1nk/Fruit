@@ -45,26 +45,42 @@ public class SetFruitSpawnCommand extends AbstractCommand {
                 FruitsMain.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(FruitsMain.getInstance(), new Runnable() {
                     @Override
                     public void run() {
-
                         try {
                             FruitEnum fruit = getRandomNotActiveFruit();
-                            if (!fruit.isActive()) {
-                                Item item = location.getWorld().dropItemNaturally(location, fruit.getFruitStack());
-                                item.setTicksLived(4800);
-                            }
-                        }
-                        catch (Exception e) {
+                            Item item = location.getWorld().dropItemNaturally(location, fruit.getFruitStack());
+                            item.setTicksLived(4800);
+                        } catch (Exception e) {
 
                         }
-
                     }
                 }, minutes, minutes);
             } catch (Exception e) {
                 sender.sendMessage(ChatColor.RED + "Invalid input data");
             }
         }
-        if (args.length == 1) {
+        if (args.length == 2) {
             Location location = ((Player) sender).getLocation();
+
+            DataManager data = FruitsMain.getInstance().data;
+            data.getConfig().set("fruitsRespawn." + args[0] + ".timeMin", args[1]);
+            data.getConfig().set("fruitsRespawn." + args[0] + ".location", location);
+            data.saveConfig();
+
+            long minutes = Long.parseLong(args[1]) * 1200L;
+
+
+            FruitsMain.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(FruitsMain.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        FruitEnum fruit = getRandomNotActiveFruit();
+                        Item item = location.getWorld().dropItemNaturally(location, fruit.getFruitStack());
+                        item.setTicksLived(4800);
+                    } catch (Exception e) {
+
+                    }
+                }
+            }, minutes, minutes);
         }
 
         return true;

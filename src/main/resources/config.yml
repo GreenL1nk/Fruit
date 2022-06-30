@@ -5,5 +5,3 @@ mySQL:
   dbname: database
   user: user
   password: password
-fruit:
-  drop_chance: 100

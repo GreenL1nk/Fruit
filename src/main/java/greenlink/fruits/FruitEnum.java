@@ -1,52 +1,45 @@
 package greenlink.fruits;
 
-import greenlink.FruitPlayer;
 import greenlink.fruits.powers.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public enum FruitEnum {
 
-    CHIYU("Chiyu Chiyu", false, null, new Chiyu()),
-    DOKU("Doku Doku", false, null, new Doku()),
-    FUWA("Fuwa Fuwa", false, null, new Fuwa()),
-    GOMU("Gomu Gomu", false, null, new Gomu()),
-    GORO("Goro Goro", false, null, new Goro()),
-    KOBU("Kobu Kobu", false, null, new Kobu()),
-    KUKU("Kuku Kuku", false, null, new Kuku()),
-    MAGU("Magu Magu", false, null, new Magu()),
-    MERA("Mera Mera", false, null, new Mera()),
-    NETSU("Netsu Netsu", false, null, new Netsu()),
-    NORO("Noro Noro", false, null, new Noro()),
-    PIKA("Pika Pika", false, null, new Pika()),
-    SUKE("Suke Suke", false, null, new Suke()),
-    TOGE("Toge Toge", false, null, new Toge()),
-    TON("Ton Ton", false, null, new Ton());
+    CHIYU("Chiyu Chiyu", new Chiyu()),
+    DOKU("Doku Doku", new Doku()),
+    FUWA("Fuwa Fuwa", new Fuwa()),
+    GOMU("Gomu Gomu", new Gomu()),
+    GORO("Goro Goro", new Goro()),
+    KOBU("Kobu Kobu", new Kobu()),
+    KUKU("Kuku Kuku", new Kuku()),
+    MAGU("Magu Magu", new Magu()),
+    MERA("Mera Mera", new Mera()),
+    NETSU("Netsu Netsu", new Netsu()),
+    NORO("Noro Noro", new Noro()),
+    PIKA("Pika Pika", new Pika()),
+    SUKE("Suke Suke", new Suke()),
+    TOGE("Toge Toge", new Toge()),
+    TON("Ton Ton", new Ton());
 
     private final String name;
     private ItemStack itemStack;
-    private boolean isActive;
-    private FruitPlayer holder;
     private final Fruit fruitPowers;
 
     private static final SecureRandom random = new SecureRandom();
 
     public static final HashMap<FruitEnum, UUID> fruitHolders = new HashMap<>();
 
-    FruitEnum(String name, boolean isActive, FruitPlayer holder, Fruit fruitPowers) {
+    FruitEnum(String name, Fruit fruitPowers) {
         this.name = name;
-        this.isActive = isActive;
-        this.holder = holder;
         this.fruitPowers = fruitPowers;
     }
 
@@ -54,20 +47,18 @@ public enum FruitEnum {
         return itemStack;
     }
 
-    public ItemStack createFruit() {
+    public void createFruit() {
         ItemStack item = new ItemStack(Material.CHORUS_FRUIT, 1);
         ItemMeta meta = item.getItemMeta();
 
         meta.displayName(Component.text(name));
 
-        meta.addEnchant(Enchantment.CHANNELING, 1, false);
+        meta.addEnchant(Enchantment.DURABILITY, 1, false);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
         item.setItemMeta(meta);
 
         this.itemStack = item;
-
-        return item;
     }
 
     public static void init() {
@@ -78,11 +69,7 @@ public enum FruitEnum {
 
     public static FruitEnum getRandomNotActiveFruit() {
         List<FruitEnum> fruitList = new ArrayList<>();
-        for (FruitEnum fruit : FruitEnum.values()) {
-            if (!fruit.isActive()) {
-                fruitList.add(fruit);
-            }
-        }
+        Collections.addAll(fruitList, FruitEnum.values());
         if (fruitList.size() > 0) {
             int x = random.nextInt(fruitList.size());
             return fruitList.get(x);
@@ -101,32 +88,14 @@ public enum FruitEnum {
         return fruitHolders;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        this.isActive = active;
-    }
-
-    public FruitPlayer getHolder() {
-        return holder;
-    }
-
-    public void setHolder(FruitPlayer holder) {
-        this.holder = holder;
-    }
-
     public Fruit getFruitPowers() {
         return fruitPowers;
     }
 
-    public static boolean playerHaveFruits(FruitPlayer fruitPlayer) {
-        for (FruitEnum value : FruitEnum.values()) {
-            if (value.getHolder() != null) {
-                if (value.getHolder() == fruitPlayer) {
-                    return true;
-                }
+    public static boolean fruitInInventory(Player player) {
+        for (FruitEnum fruit : FruitEnum.values()) {
+            if (player.getInventory().contains(fruit.getFruitStack())) {
+                return true;
             }
         }
         return false;
