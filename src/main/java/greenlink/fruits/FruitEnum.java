@@ -1,13 +1,18 @@
 package greenlink.fruits;
 
+import greenlink.FruitsMain;
 import greenlink.fruits.powers.*;
+import greenlink.items.ItemEnum;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.security.SecureRandom;
 import java.util.*;
@@ -31,12 +36,13 @@ public enum FruitEnum {
     TON("Ton Ton", new Ton());
 
     private final String name;
+
     private ItemStack itemStack;
     private final Fruit fruitPowers;
-
+    public static final NamespacedKey namespacedKey = new NamespacedKey(FruitsMain.getInstance(), "fruit");
     private static final SecureRandom random = new SecureRandom();
-
     public static final HashMap<FruitEnum, UUID> fruitHolders = new HashMap<>();
+    public static ShapelessRecipe shapelessRecipe;
 
     FruitEnum(String name, Fruit fruitPowers) {
         this.name = name;
@@ -48,22 +54,29 @@ public enum FruitEnum {
     }
 
     public void createFruit() {
-        ItemStack item = new ItemStack(Material.CHORUS_FRUIT, 1);
+        ItemStack item = new ItemStack(Material.CHORUS_FRUIT);
         ItemMeta meta = item.getItemMeta();
 
-        meta.displayName(Component.text(name));
-
+        meta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, name);
+        meta.displayName(Component.text("unidentified fruit").decorate(TextDecoration.OBFUSCATED));
         meta.addEnchant(Enchantment.DURABILITY, 1, false);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
         item.setItemMeta(meta);
-
         this.itemStack = item;
     }
 
     public static void init() {
         for (FruitEnum fruit : FruitEnum.values()) {
             fruit.createFruit();
+
+            NamespacedKey identifier = new NamespacedKey(FruitsMain.getInstance(), fruit.name().toLowerCase());
+
+            ShapelessRecipe recipe = new ShapelessRecipe(identifier, fruit.itemStack);
+            recipe.addIngredient(ItemEnum.FRUIT_CHECKER.getItem());
+            recipe.addIngredient(fruit.getFruitStack());
+            FruitsMain.getInstance().getServer().addRecipe(recipe);
+            shapelessRecipe = recipe;
         }
     }
 
@@ -78,7 +91,6 @@ public enum FruitEnum {
     }
 
     public static HashMap<FruitEnum, UUID> setFruitMap() {
-
         for (FruitEnum fruit : FruitEnum.values()) {
             if (!fruitHolders.containsKey(fruit)) {
                 fruitHolders.put(fruit, null);
@@ -92,12 +104,7 @@ public enum FruitEnum {
         return fruitPowers;
     }
 
-    public static boolean fruitInInventory(Player player) {
-        for (FruitEnum fruit : FruitEnum.values()) {
-            if (player.getInventory().contains(fruit.getFruitStack())) {
-                return true;
-            }
-        }
-        return false;
+    public String getName() {
+        return name;
     }
 }

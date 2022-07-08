@@ -18,7 +18,7 @@ public class Mera extends Fruit {
             if (rightCoolDown.get(player.getUniqueId()) > System.currentTimeMillis()) {
 
                 long timeLeft = (rightCoolDown.get(player.getUniqueId()) - System.currentTimeMillis()) / 1000;
-                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Cooldown: " + ChatColor.GRAY + timeLeft + "s");
+                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Перезарядка: " + ChatColor.GRAY + timeLeft + "с");
 
                 return;
             }
@@ -39,7 +39,7 @@ public class Mera extends Fruit {
             if (leftCoolDown.get(player.getUniqueId()) > System.currentTimeMillis()) {
 
                 long timeLeft = (leftCoolDown.get(player.getUniqueId()) - System.currentTimeMillis()) / 1000;
-                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Cooldown " + ChatColor.DARK_GRAY + ChatColor.BOLD + "the fireball: " + ChatColor.GRAY + timeLeft + "s");
+                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Перезарядка " + ChatColor.DARK_GRAY + ChatColor.BOLD + "огненного шара: " + ChatColor.GRAY + timeLeft + "с");
 
                 return;
             }

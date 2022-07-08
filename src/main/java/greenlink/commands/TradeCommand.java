@@ -34,20 +34,20 @@ public class TradeCommand extends AbstractCommand {
                 if (args[0].equals("accept")) {
                     Player tradeWith = Bukkit.getPlayer(args[1]);
                     if (playerTradeRequests.containsKey(requester) && playerTradeRequests.get(requester).contains(tradeWith)) {
-                        if (tradeWith == null || requester.getLocation().distance(tradeWith.getLocation()) > 30) {requester.sendMessage(ChatColor.LIGHT_PURPLE + "" + tradeWith + ChatColor.RED + "is not near.");playerTradeRequests.remove(tradeWith);return true;}
+                        if (tradeWith == null || requester.getLocation().distance(tradeWith.getLocation()) > 30) {requester.sendMessage(ChatColor.LIGHT_PURPLE + "" + tradeWith + ChatColor.RED + "не находится рядом.");playerTradeRequests.remove(tradeWith);return true;}
                         TradeMenu.display(requester, tradeWith);
                         playerTradeRequests.remove(tradeWith);
                     }
                     else {
-                        requester.sendMessage(ChatColor.GRAY + "You don't have active request trade from " + ChatColor.LIGHT_PURPLE + args[1]);
+                        requester.sendMessage(ChatColor.GRAY + "У вас нет активного запроса на торговлю от " + ChatColor.LIGHT_PURPLE + args[1]);
                     }
                 }
                 if (args[0].equals("request")) {
                     Player tradeWith = Bukkit.getPlayer(args[1]);
-                    if(tradeWith == null || requester.getLocation().distance(tradeWith.getLocation()) > 30) {requester.sendMessage(ChatColor.LIGHT_PURPLE + "" + args[1] + ChatColor.RED + "is not near.");return true;}
+                    if(tradeWith == null || requester.getLocation().distance(tradeWith.getLocation()) > 30) {requester.sendMessage(ChatColor.LIGHT_PURPLE + "" + args[1] + ChatColor.RED + "не находится рядом.");return true;}
                     if (playerTradeRequests.containsKey(tradeWith) && playerTradeRequests.get(tradeWith).contains(requester)) return true;
 
-                    requester.sendMessage(ChatColor.GRAY + "Your trade request sent to " + ChatColor.LIGHT_PURPLE + args[1]);
+                    requester.sendMessage(ChatColor.GRAY + "Ваш торговый запрос, отправлен " + ChatColor.LIGHT_PURPLE + args[1]);
                     playerTradeRequests.put(tradeWith, new ArrayList<>());
                     playerTradeRequests.get(tradeWith).add(requester);
 
@@ -55,8 +55,8 @@ public class TradeCommand extends AbstractCommand {
                             .append(
                                     Component.text(requester.getName())
                                             .color(NamedTextColor.LIGHT_PURPLE))
-                            .append(Component.text(" sent you a request to trade", NamedTextColor.GRAY))
-                            .hoverEvent(Component.text("Click to accept").color(NamedTextColor.GRAY))
+                            .append(Component.text(" отправил вам запрос на торговлю", NamedTextColor.GRAY))
+                            .hoverEvent(Component.text("Нажмите, чтобы принять").color(NamedTextColor.GRAY))
                             .clickEvent(ClickEvent.runCommand("/trade accept " + requester.getName()));
 
                     tradeWith.sendMessage(textComponent);

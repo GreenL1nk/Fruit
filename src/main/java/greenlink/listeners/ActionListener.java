@@ -19,11 +19,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
@@ -74,11 +77,12 @@ public class ActionListener implements Listener {
             ItemStack mainHandItem = player.getInventory().getItemInMainHand();
             ItemStack offHandItem = player.getInventory().getItemInOffHand();
 
-            ItemEnum itemEnum = Arrays.stream(ItemEnum.values()).filter(item -> item.getItem().equals(event.getItem())).findFirst().orElse(null);
-
-            if(itemEnum != null) {
-                itemEnum.getItem().onUse(event);
-                event.setCancelled(true);
+            if (event.getItem() != null) {
+                ItemEnum itemEnum = Arrays.stream(ItemEnum.values()).filter(item -> item.getItem().getItemMeta().equals(event.getItem().getItemMeta())).findFirst().orElse(null);
+                if (itemEnum != null) {
+                    itemEnum.getItem().onUse(event);
+                    event.setCancelled(true);
+                }
             }
 
             if (fruitPlayer.getActiveFruit() != null && mainHandItem.getType().isAir() && offHandItem.getType().isAir()) {
@@ -91,15 +95,15 @@ public class ActionListener implements Listener {
             }
 
             else if (event.hasItem()) {
-                if (event.getItem().getItemMeta() == null) return;
-                FruitEnum fruit = Arrays.stream(FruitEnum.values()).filter(f -> f.getFruitStack().getItemMeta().equals(event.getItem().getItemMeta())).findFirst().orElse(null);
+                if (!event.getItem().getItemMeta().getPersistentDataContainer().has(FruitEnum.namespacedKey)) return;
+                FruitEnum fruit = Arrays.stream(FruitEnum.values()).filter(f -> f.getName().equals(event.getItem().getItemMeta().getPersistentDataContainer().get(FruitEnum.namespacedKey, PersistentDataType.STRING))).findFirst().orElse(null);
 
                 if (fruit != null) {
 
                     event.setCancelled(true);
 
                     if (fruitPlayer.getActiveFruit() != null) {
-                        player.sendMessage(ChatColor.DARK_GRAY + "You already have an active fruit");
+                        player.sendMessage(ChatColor.DARK_GRAY + "У вас уже есть активный фрукт");
                         return;
                     }
                     if (fruit.getFruitStack().getItemMeta().equals(offHandItem.getItemMeta())) {
@@ -126,7 +130,7 @@ public class ActionListener implements Listener {
 
         FruitPlayer fruitPlayer = PlayerManager.getInstance().getPlayer(player.getUniqueId());
 
-        if (fruitPlayer.getActiveFruit() == null && !FruitEnum.fruitInInventory(player)) return;
+        if (fruitPlayer.getActiveFruit() == null) return;
 
         if(fruitPlayer.getActiveFruit() != null) {
             fruitPlayer.getActiveFruit().getFruitPowers().onDeath(player);
@@ -158,7 +162,7 @@ public class ActionListener implements Listener {
             ActiveMob mythicMobInstance = mythicMobsAPI.getMythicMobInstance(event.getEntity());
             FruitPlayer player = PlayerManager.getInstance().getPlayer(damager.getUniqueId());
             if (player.getLevel() < mythicMobInstance.getLevel()) {
-                damager.sendMessage(ChatColor.RED + "You cannot attack a mob of a level higher than you");
+                damager.sendMessage(ChatColor.RED + "Вы не можете атаковать моба более высокого уровня, чем ваш");
                 event.setCancelled(true);
             }
         }
@@ -225,6 +229,12 @@ public class ActionListener implements Listener {
     public void onAnvil(PrepareAnvilEvent event) {
         ItemStack firstItem = event.getInventory().getFirstItem();
         ItemStack secondItem = event.getInventory().getSecondItem();
+        if (firstItem != null) {
+            if (Arrays.stream(ItemEnum.values()).filter(itemEnum -> firstItem.getItemMeta().equals(itemEnum.getItem().getItemMeta())).findFirst().orElse(null) != null
+                    || Arrays.stream(FruitEnum.values()).filter(fruitEnum -> firstItem.getItemMeta().equals(fruitEnum.getFruitStack().getItemMeta())).findFirst().orElse(null) != null) {
+                event.setResult(null);
+            }
+        }
         if (firstItem != null && secondItem != null) {
             for (EnchantEnum value : EnchantEnum.values()) {
                 if (secondItem.getItemMeta().hasEnchant(value.getEnchant()) && MaterialTags.SWORDS.isTagged(firstItem)) {
@@ -252,6 +262,17 @@ public class ActionListener implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        ItemStack result = event.getRecipe().getResult();
+        ItemMeta itemMeta = result.getItemMeta();
+        FruitEnum fruit = Arrays.stream(FruitEnum.values()).filter(f -> f.getName().equals(event.getRecipe().getResult().getItemMeta().getPersistentDataContainer().get(FruitEnum.namespacedKey, PersistentDataType.STRING))).findFirst().orElse(null);
+        if (fruit == null) return;
+        itemMeta.displayName(Component.text(fruit.getName()));
+        result.setItemMeta(itemMeta);
+        event.getInventory().setResult(result);
     }
 
     @EventHandler

@@ -55,7 +55,7 @@ public class SetFruitSpawnCommand extends AbstractCommand {
                     }
                 }, minutes, minutes);
             } catch (Exception e) {
-                sender.sendMessage(ChatColor.RED + "Invalid input data");
+                sender.sendMessage(ChatColor.RED + "Неверные входные данные");
             }
         }
         if (args.length == 2) {

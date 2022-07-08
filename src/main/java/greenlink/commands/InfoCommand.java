@@ -21,15 +21,13 @@ public class InfoCommand extends AbstractCommand {
         if (args.length == 0) {
 
             FruitPlayer player = PlayerManager.getInstance().getPlayer(((Player) sender).getUniqueId());
-            sender.sendMessage(ChatColor.GRAY + "Level: " + ChatColor.LIGHT_PURPLE + player.getLevel());
-            sender.sendMessage(ChatColor.GRAY + "Exp: " + ChatColor.LIGHT_PURPLE + player.getXp());
+            sender.sendMessage(ChatColor.GRAY + "Уровень: " + ChatColor.LIGHT_PURPLE + player.getLevel());
+            sender.sendMessage(ChatColor.GRAY + "Опыта: " + ChatColor.LIGHT_PURPLE + player.getXp());
             int needXP = player.lvlFormula() - player.getXp();
-            sender.sendMessage(ChatColor.GRAY + "For the next level need " + ChatColor.LIGHT_PURPLE + needXP + ChatColor.GRAY + " exp (" + ChatColor.LIGHT_PURPLE  + player.getXp() + ChatColor.GRAY + "/" + ChatColor.LIGHT_PURPLE + player.lvlFormula() + ChatColor.GRAY + ")");
+            sender.sendMessage(ChatColor.GRAY + "Опыта до след. уровня " + ChatColor.LIGHT_PURPLE + needXP + ChatColor.GRAY + " опыт (" + ChatColor.LIGHT_PURPLE  + player.getXp() + ChatColor.GRAY + "/" + ChatColor.LIGHT_PURPLE + player.lvlFormula() + ChatColor.GRAY + ")");
 
             return true;
         }
-
-
 
         return true;
     }

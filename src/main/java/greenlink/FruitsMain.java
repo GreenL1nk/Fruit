@@ -31,11 +31,11 @@ public final class FruitsMain extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         instance = this;
 
         this.saveDefaultConfig();
         this.data = new DataManager();
+        data.saveDefaultConfig();
 
         new FruitCommand().register(this, "fruit");
         new SetFruitSpawnCommand().register(this, "setfruitspawn");
@@ -53,8 +53,8 @@ public final class FruitsMain extends JavaPlugin {
             EnchantEnum.registerEnchantment(value.getEnchant());
         }
 
-        FruitEnum.init();
         ItemEnum.init();
+        FruitEnum.init();
 
         for (FruitEnum value : FruitEnum.values()) {
             if (!data.getConfig().getConfigurationSection("fruits_chances").contains(value.name())) {

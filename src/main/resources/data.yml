@@ -1,2 +1,18 @@
 fruit:
   drop_chance: 100
+fruits_chances:
+  CHIYU: 1
+  DOKU: 1
+  FUWA: 1
+  GOMU: 1
+  GORO: 1
+  KOBU: 1
+  KUKU: 1
+  MAGU: 1
+  MERA: 1
+  NETSU: 1
+  NORO: 1
+  PIKA: 1
+  SUKE: 1
+  TOGE: 1
+  TON: 1

@@ -7,6 +7,5 @@ public abstract class AbstractItem extends ItemStack {
     public AbstractItem(ItemStack itemStack) {
         super(itemStack);
     }
-
     public abstract void onUse(PlayerInteractEvent event);
 }

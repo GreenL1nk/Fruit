@@ -18,7 +18,7 @@ public class Fuwa extends Fruit {
             if (rightCoolDown.get(player.getUniqueId()) > System.currentTimeMillis()) {
 
                 long timeLeft = (rightCoolDown.get(player.getUniqueId()) - System.currentTimeMillis()) / 1000;
-                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Cooldown: " + ChatColor.GRAY + timeLeft + "s");
+                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Перезарядка: " + ChatColor.GRAY + timeLeft + "с");
 
                 return;
             }

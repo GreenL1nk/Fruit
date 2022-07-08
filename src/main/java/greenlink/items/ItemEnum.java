@@ -10,7 +10,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public enum ItemEnum {
 
-    DARK_ROOT(new DarkRoot(new ItemStack(Material.CHAIN)), "DarkRoot");
+    DARK_ROOT(new DarkRoot(new ItemStack(Material.CHAIN)), "DarkRoot"),
+    FRUIT_CHECKER(new FruitChecker(new ItemStack(Material.END_ROD)), "FruitChecker");
 
     private final AbstractItem item;
     private final String name;

@@ -17,7 +17,7 @@ public class Gomu extends Fruit {
             if (rightCoolDown.get(player.getUniqueId()) > System.currentTimeMillis()) {
 
                 long timeLeft = (rightCoolDown.get(player.getUniqueId()) - System.currentTimeMillis()) / 1000;
-                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Cooldown " + ChatColor.DARK_GRAY + ChatColor.BOLD + "the jump boost: " + ChatColor.GRAY + timeLeft + "s");
+                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Перезарядка " + ChatColor.DARK_GRAY + ChatColor.BOLD + "высокого прыжка: " + ChatColor.GRAY + timeLeft + "с");
 
                 return;
             }
@@ -34,7 +34,7 @@ public class Gomu extends Fruit {
             if (leftCoolDown.get(player.getUniqueId()) > System.currentTimeMillis()) {
 
                 long timeLeft = (leftCoolDown.get(player.getUniqueId()) - System.currentTimeMillis()) / 1000;
-                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Cooldown " + ChatColor.DARK_GRAY + ChatColor.BOLD + "the long jump: " + ChatColor.GRAY + timeLeft + "s");
+                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Перезарядка " + ChatColor.DARK_GRAY + ChatColor.BOLD + "длинного прыжка: " + ChatColor.GRAY + timeLeft + "с");
 
                 return;
             }

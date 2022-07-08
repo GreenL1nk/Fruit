@@ -17,7 +17,7 @@ public class FruitPlayer {
     public FruitPlayer(UUID uuid) {
         this.uuid = uuid;
         this.xp = 0;
-        this.level = 0;
+        this.level = 1;
         this.activeFruit = null;
         this.leaveTime = null;
     }
@@ -82,12 +82,12 @@ public class FruitPlayer {
     }
 
     public int lvlFormula() {
-        int maxXP = 100;
+        double maxXP = 100;
 
         for(int i = 0; i < level; i++) {
-            maxXP = (int) (maxXP * 1.05);
+            maxXP = (maxXP * 1.05);
         }
-        return maxXP;
+        return (int) maxXP;
     }
 
     public void addLevel(int count) {

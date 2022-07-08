@@ -30,7 +30,7 @@ public class Pika extends Fruit {
             if (rightCoolDown.get(player.getUniqueId()) > System.currentTimeMillis()) {
 
                 long timeLeft = (rightCoolDown.get(player.getUniqueId()) - System.currentTimeMillis()) / 1000;
-                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Cooldown " + ChatColor.DARK_GRAY + ChatColor.BOLD + "the storm of spectral arrows: " + ChatColor.GRAY + timeLeft + "s");
+                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Перезарядка " + ChatColor.DARK_GRAY + ChatColor.BOLD + "Шторм спектральных стрел: " + ChatColor.GRAY + timeLeft + "с");
 
                 return;
             }
@@ -76,7 +76,7 @@ public class Pika extends Fruit {
             if (leftCoolDown.get(player.getUniqueId()) > System.currentTimeMillis()) {
 
                 long timeLeft = (leftCoolDown.get(player.getUniqueId()) - System.currentTimeMillis()) / 1000;
-                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Cooldown " + ChatColor.DARK_GRAY + ChatColor.BOLD + "the spectral arrow: " + ChatColor.GRAY + timeLeft + "s");
+                player.sendMessage("" + ChatColor.DARK_GRAY + ChatColor.ITALIC + "Перезарядка " + ChatColor.DARK_GRAY + ChatColor.BOLD + "спектральных стрел: " + ChatColor.GRAY + timeLeft + "с");
 
                 return;
             }
