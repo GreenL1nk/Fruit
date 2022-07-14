@@ -12,7 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,15 +27,15 @@ public class TradeCommand extends AbstractCommand {
         if (sender instanceof Player) {
             Player requester = (Player) sender;
             HashMap<Player, ArrayList<Player>> playerTradeRequests = FruitsMain.getInstance().playerTradeRequests;
-            if (requester.toString().equals(args[1])) return true;
 
             if (args.length == 2) {
+                if (requester.getName().equalsIgnoreCase(args[1])) return true;
                 if (args[0].equals("accept")) {
                     Player tradeWith = Bukkit.getPlayer(args[1]);
                     if (playerTradeRequests.containsKey(requester) && playerTradeRequests.get(requester).contains(tradeWith)) {
                         if (tradeWith == null || requester.getLocation().distance(tradeWith.getLocation()) > 30) {requester.sendMessage(ChatColor.LIGHT_PURPLE + "" + tradeWith + ChatColor.RED + "не находится рядом.");playerTradeRequests.remove(tradeWith);return true;}
                         TradeMenu.display(requester, tradeWith);
-                        playerTradeRequests.remove(tradeWith);
+                        playerTradeRequests.remove(requester);
                     }
                     else {
                         requester.sendMessage(ChatColor.GRAY + "У вас нет активного запроса на торговлю от " + ChatColor.LIGHT_PURPLE + args[1]);
@@ -71,21 +70,24 @@ public class TradeCommand extends AbstractCommand {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        ArrayList<String> alias = new ArrayList<>();
-        alias.add("request");
-        alias.add("accept");
+        if (args.length == 1) {
+            ArrayList<String> alias = new ArrayList<>();
+            alias.add("request");
+            alias.add("accept");
 
-        ArrayList<String> refundable = new ArrayList<>();
+            ArrayList<String> refundable = new ArrayList<>();
 
-        String lastWord = args[args.length - 1];
-        Player senderPlayer = sender instanceof Player ? (Player) sender : null;
+            String lastWord = args[args.length - 1].toLowerCase();
+            Player senderPlayer = sender instanceof Player ? (Player) sender : null;
 
-        for (String s : alias) {
-            if (senderPlayer != null && StringUtil.startsWithIgnoreCase(s, lastWord)) {
-                refundable.add(s);
+            for (String s : alias) {
+                if (senderPlayer != null && s.toLowerCase().contains(lastWord)) {
+                    refundable.add(s);
+                }
             }
-        }
 
-        return refundable;
+            return refundable;
+        }
+        return null;
     }
 }

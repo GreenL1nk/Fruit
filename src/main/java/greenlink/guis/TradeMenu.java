@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +40,7 @@ public class TradeMenu extends AbstractInventoryHolder {
         ItemStack red_glass_pane = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemStack red_concrete = new ItemStack(Material.RED_CONCRETE);
         ItemStack barrier = new ItemStack(Material.BARRIER);
+        ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD);
 
         for (int i = 0; i < 6; i++) {
             ItemMeta itemMeta = iron_bars.getItemMeta();
@@ -49,21 +51,31 @@ public class TradeMenu extends AbstractInventoryHolder {
         }
         this.inventory.setItem(4, iron_bars);
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             ItemMeta itemMeta = red_glass_pane.getItemMeta();
-            itemMeta.displayName(Component.text(ChatColor.RED + "NOT READY"));
+            itemMeta.displayName(Component.text(ChatColor.RED + "Не готов"));
             red_glass_pane.setItemMeta(itemMeta);
 
-            this.inventory.setItem(45 + i, red_glass_pane);
+            this.inventory.setItem(46 + i, red_glass_pane);
             this.inventory.setItem(51 + i, red_glass_pane);
         }
         ItemMeta red_concreteItemMeta = red_concrete.getItemMeta();
-        red_concreteItemMeta.displayName(Component.text(ChatColor.YELLOW + "CLICK TO READY"));
+        red_concreteItemMeta.displayName(Component.text(ChatColor.YELLOW + "Нажмите для готовности"));
         red_concrete.setItemMeta(red_concreteItemMeta);
 
         ItemMeta barrierItemMeta = barrier.getItemMeta();
-        barrierItemMeta.displayName(Component.text(ChatColor.RED + "CANCEL"));
+        barrierItemMeta.displayName(Component.text(ChatColor.RED + "Отмена"));
         barrier.setItemMeta(barrierItemMeta);
+
+        SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
+        skullMeta.displayName(Component.text(ChatColor.LIGHT_PURPLE + requester.getName()));
+        skullMeta.setOwningPlayer(requester);
+        playerHead.setItemMeta(skullMeta);
+        this.inventory.setItem(45, playerHead);
+        skullMeta.displayName(Component.text(ChatColor.LIGHT_PURPLE + responser.getName()));
+        skullMeta.setOwningPlayer(responser);
+        playerHead.setItemMeta(skullMeta);
+        this.inventory.setItem(53, playerHead);
 
         this.inventory.setItem(48, red_concrete);
         this.inventory.setItem(50, red_concrete);
@@ -84,16 +96,16 @@ public class TradeMenu extends AbstractInventoryHolder {
 
             ItemStack red_glass_pane = new ItemStack(Material.RED_STAINED_GLASS_PANE);
             ItemStack red_concrete = new ItemStack(Material.RED_CONCRETE);
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 ItemMeta itemMeta = red_glass_pane.getItemMeta();
-                itemMeta.displayName(Component.text(ChatColor.RED + "NOT READY"));
+                itemMeta.displayName(Component.text(ChatColor.RED + "Не готов"));
                 red_glass_pane.setItemMeta(itemMeta);
 
-                this.inventory.setItem(45 + i, red_glass_pane);
+                this.inventory.setItem(46 + i, red_glass_pane);
                 this.inventory.setItem(51 + i, red_glass_pane);
             }
             ItemMeta red_concreteItemMeta = red_concrete.getItemMeta();
-            red_concreteItemMeta.displayName(Component.text(ChatColor.YELLOW + "CLICK TO READY"));
+            red_concreteItemMeta.displayName(Component.text(ChatColor.YELLOW + "Нажмите для готовности"));
             red_concrete.setItemMeta(red_concreteItemMeta);
             this.inventory.setItem(48, red_concrete);
             this.inventory.setItem(50, red_concrete);
@@ -103,15 +115,15 @@ public class TradeMenu extends AbstractInventoryHolder {
         if (event.getRawSlot() == 48 && event.getWhoClicked() == requester && !requesterReady) {
             ItemStack greenConcrete = new ItemStack(Material.GREEN_CONCRETE);
             ItemMeta itemMeta = greenConcrete.getItemMeta();
-            itemMeta.displayName(Component.text(ChatColor.GREEN + requester.getName() + " IS READY"));
+            itemMeta.displayName(Component.text(ChatColor.GREEN + requester.getName() + " Готов"));
             greenConcrete.setItemMeta(itemMeta);
             this.inventory.setItem(48, greenConcrete);
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 ItemMeta glass_paneItemMeta = green_glass_pane.getItemMeta();
-                glass_paneItemMeta.displayName(Component.text(ChatColor.GREEN + requester.getName() + " IS READY"));
+                glass_paneItemMeta.displayName(Component.text(ChatColor.GREEN + requester.getName() + " Готов"));
                 green_glass_pane.setItemMeta(glass_paneItemMeta);
-                this.inventory.setItem(45 + i, green_glass_pane);
+                this.inventory.setItem(46 + i, green_glass_pane);
             }
 
             responser.playSound(responser, Sound.BLOCK_LEVER_CLICK, 1, 1);
@@ -121,13 +133,13 @@ public class TradeMenu extends AbstractInventoryHolder {
         if (event.getRawSlot() == 50 && event.getWhoClicked() == responser && !responserReady) {
             ItemStack greenConcrete = new ItemStack(Material.GREEN_CONCRETE);
             ItemMeta itemMeta = greenConcrete.getItemMeta();
-            itemMeta.displayName(Component.text(ChatColor.GREEN + responser.getName() + " IS READY"));
+            itemMeta.displayName(Component.text(ChatColor.GREEN + responser.getName() + " Готов"));
             greenConcrete.setItemMeta(itemMeta);
             this.inventory.setItem(50, greenConcrete);
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 ItemMeta glass_paneItemMeta = green_glass_pane.getItemMeta();
-                glass_paneItemMeta.displayName(Component.text(ChatColor.GREEN + responser.getName() + " IS READY"));
+                glass_paneItemMeta.displayName(Component.text(ChatColor.GREEN + responser.getName() + " Готов"));
                 green_glass_pane.setItemMeta(glass_paneItemMeta);
                 this.inventory.setItem(51 + i, green_glass_pane);
             }

@@ -42,6 +42,8 @@ public final class FruitsMain extends JavaPlugin {
         new TradeCommand().register(this, "trade");
         new AddPlayerXpCommand().register(this, "addxp");
         new InfoCommand().register(this, "info");
+        new DarkRootCommand().register(this, "darkroot");
+        new CheckerCommand().register(this, "checker");
 
         Bukkit.getPluginManager().registerEvents(new ActionListener(), this);
         Bukkit.getPluginManager().registerEvents(new QuitListener(), this);

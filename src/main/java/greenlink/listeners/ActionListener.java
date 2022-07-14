@@ -99,7 +99,6 @@ public class ActionListener implements Listener {
                 FruitEnum fruit = Arrays.stream(FruitEnum.values()).filter(f -> f.getName().equals(event.getItem().getItemMeta().getPersistentDataContainer().get(FruitEnum.namespacedKey, PersistentDataType.STRING))).findFirst().orElse(null);
 
                 if (fruit != null) {
-
                     event.setCancelled(true);
 
                     if (fruitPlayer.getActiveFruit() != null) {
